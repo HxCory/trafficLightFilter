@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -20,12 +10,6 @@ class TrafficLightFilterAudioProcessor : public AudioProcessor,
                                          public IIRCoefficients
 {
  public:
-  //  float cutoffFreq;
-  //  float resonance;
-  //  float filterAmt;
-  // AudioParameterFloat* cutoff;
-  // AudioParameterFloat* res;
-  // AudioParameterFloat* amt;
   //==============================================================================
   TrafficLightFilterAudioProcessor();
   ~TrafficLightFilterAudioProcessor();

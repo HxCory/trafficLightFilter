@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginEditor.h"
 #include "PluginProcessor.h"
 
@@ -16,16 +6,14 @@ TrafficLightFilterAudioProcessorEditor::TrafficLightFilterAudioProcessorEditor(
     TrafficLightFilterAudioProcessor& p)
     : AudioProcessorEditor(&p), processor(p)
 {
-  // Make sure that before the constructor has finished, you've set the
-  // editor's size to whatever you need it to be.
   setSize(400, 400);
-  // these define the parameters of our slider object
+
   cutoffslider.setSliderStyle(Slider::RotaryVerticalDrag);
   cutoffslider.setRange(10.0, 20000.0, 1.0);
   cutoffslider.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);
   cutoffslider.setPopupDisplayEnabled(true, false, this);
   cutoffslider.setTextValueSuffix(" Cutoff");
-  cutoffslider.setValue(600.0);
+  cutoffslider.setValue(1000.0);
   cutoffslider.setColour(Slider::rotarySliderFillColourId, Colours::darkred);
   cutoffslider.setColour(Slider::rotarySliderOutlineColourId, Colours::red);
   addAndMakeVisible(&cutoffslider);
@@ -57,15 +45,8 @@ TrafficLightFilterAudioProcessorEditor::TrafficLightFilterAudioProcessorEditor(
   amount.reset(new AudioProcessorValueTreeState::SliderAttachment(
       processor.tree, "amount", amtslider));
 
-  //  std::cout << "constructing slider attachments" << std::endl;
-  //  cutoff = new AudioProcessorValueTreeState::SliderAttachment(
-  //      processor.tree, "cutoff", cutoffslider);
-  //  resonance = new AudioProcessorValueTreeState::SliderAttachment(
-  //      processor.tree, "resonance", resslider);
-  //  amount = new AudioProcessorValueTreeState::SliderAttachment(
-  //      processor.tree, "amount", amtslider);
-
   cutoffslider.setSkewFactorFromMidPoint(1000.0f);
+
 }
 
 TrafficLightFilterAudioProcessorEditor::
@@ -76,14 +57,8 @@ TrafficLightFilterAudioProcessorEditor::
 //==============================================================================
 void TrafficLightFilterAudioProcessorEditor::paint(Graphics& g)
 {
-  // (Our component is opaque, so we must completely fill the background with a
-  // solid colour)
-
-  // fill the whole window black
   g.fillAll(Colours::transparentBlack);
-  // set the current drawing colour to red
   g.setColour(Colours::darkred);
-  // set the font size and draw text to the screen
   g.setFont(15.0f);
   g.drawFittedText("Cutoff", 0.1 * getWidth(), 0.25 * getHeight(), getWidth(),
                    30, Justification::centred, 1);
@@ -97,8 +72,6 @@ void TrafficLightFilterAudioProcessorEditor::paint(Graphics& g)
 
 void TrafficLightFilterAudioProcessorEditor::resized()
 {
-  // This is generally where you'll want to lay out the positions of any
-  // subcomponents in your editor..
   cutoffslider.setBounds(0.1 * getWidth(), 0.1 * getHeight(), 0.5 * getWidth(),
                          100);
   resslider.setBounds(0.1 * getWidth(), 0.35 * getHeight(), 0.5 * getWidth(),
@@ -106,11 +79,3 @@ void TrafficLightFilterAudioProcessorEditor::resized()
   amtslider.setBounds(0.1 * getWidth(), 0.6 * getHeight(), 0.5 * getWidth(),
                       100);
 }
-
-// void TrafficLightFilterAudioProcessorEditor::sliderValueChanged(Slider*
-// slider)
-// {
-//   processor.cutoffFreq = cutoffslider.getValue();
-//   processor.resonance  = resslider.getValue();
-//   processor.filterAmt  = amtslider.getValue();
-// }

@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -27,8 +17,6 @@ class TrafficLightFilterAudioProcessorEditor : public AudioProcessorEditor
   void resized() override;
 
  private:
-  // This reference is provided as a quick way for your editor to
-  // access the processor object that created it.
   Slider cutoffslider;
   Slider resslider;
   Slider amtslider;

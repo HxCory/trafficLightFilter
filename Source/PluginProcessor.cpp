@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -106,7 +96,6 @@ void TrafficLightFilterAudioProcessor::prepareToPlay(double sampleRate,
                                                      int samplesPerBlock)
 {
   lastSampleRate = sampleRate;
-  std::cout << "running" << std::endl;
   dsp::ProcessSpec spec;
   spec.sampleRate       = sampleRate;
   spec.maximumBlockSize = samplesPerBlock;
@@ -149,22 +138,18 @@ bool TrafficLightFilterAudioProcessor::isBusesLayoutSupported(
 
 void TrafficLightFilterAudioProcessor::updateParams()
 {
-  std::cout << "updateParams called" << std::endl;
   float sFreq = *tree.getRawParameterValue("cutoff");
   float sRes  = *tree.getRawParameterValue("resonance");
   float sAmt  = *tree.getRawParameterValue("amount");
-  std::cout << "floats set" << std::endl;
+
   // going into "state" of the process duplicator
   *highPassFilter.state = *dsp::IIR::Coefficients< float >::makeHighPass(
       lastSampleRate, sFreq, sRes);
-  std::cout << "state updated" << std::endl;
-  std::cout << "exiting uP" << std::endl;
 }
 
 void TrafficLightFilterAudioProcessor::processBlock(
     AudioBuffer< float >& buffer, MidiBuffer& midiMessages)
 {
-  std::cout << "processBlock called" << std::endl;
   ScopedNoDenormals noDenormals;
   auto totalNumInputChannels  = getTotalNumInputChannels();
   auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -174,9 +159,7 @@ void TrafficLightFilterAudioProcessor::processBlock(
     buffer.clear(i, 0, buffer.getNumSamples());
   }
 
-  std::cout << "declare block" << std::endl;
   dsp::AudioBlock< float > aBlock(buffer);
-  std::cout << "about to update params" << std::endl;
   updateParams();
   highPassFilter.process(dsp::ProcessContextReplacing< float >(aBlock));
 }
