@@ -22,7 +22,7 @@ TrafficLightFilterAudioProcessor::TrafficLightFilterAudioProcessor()
                          .withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
                          ),
-      tree(*this, nullptr, Identifier("Traffic Light Filter"),
+      tree(*this, nullptr, Identifier("TrafficLightFilter"),
            {std::make_unique< AudioParameterFloat >("cutoff", "Cutoff", 10.0f,
                                                     20000.0f, 1000.0f),
             std::make_unique< AudioParameterFloat >("resonance", "Resonance",
@@ -38,30 +38,6 @@ TrafficLightFilterAudioProcessor::TrafficLightFilterAudioProcessor()
   NormalisableRange< float > cutRange(10.0f, 20000.0f);
   NormalisableRange< float > resRange(1.0f, 6.0f);
   NormalisableRange< float > amtRange(0.0f, 100.0f);
-
-  // tree.createAndAddParameter("cutoff", "Cutoff", "cutoff", cutRange, 600.0f,
-  //                            nullptr, nullptr);
-  // tree.createAndAddParameter("resonance", "Resonance", "resonance", resRange,
-  //                            1.0f, nullptr, nullptr);
-  // using Parameter = AudioProcessorValueTreeState::Parameter;
-  // TrafficLightFilterAudioProcessor()
-  //     : tree(*this, nullptr, "PARAMETERS",
-  //            {std::make_unique< Parameter >("cutoff", "Cutoff", "cutoff",
-  //                                           cutRange, 600.0f, nullptr,
-  //                                           nullptr),
-  //             std::make_unique< Parameter >("resonance", "Resonance",
-  //                                           "resonance", resRange, 1.0f,
-  //                                           nullptr, nullptr)})
-  //  tree.createAndAddParameter("amount", "Amount", "amount", amtRange, 100.0f,
-  //                             nullptr, nullptr);
-  // using Parameter = AudioProcessorValueTreeState::Parameter;
-  // tree.createAndAddParameter(std::make_unique< Parameter >(
-  //     "cutoff", "Cutoff", "cutoff", cutRange, 600.0f, nullptr, nullptr));
-  // tree.createAndAddParameter(std::make_unique< Parameter >(
-  //     "resonance", "Resonance", "resonance", resRange, 1.0f, nullptr,
-  //     nullptr));
-  // tree.createAndAddParameter(std::make_unique< Parameter >(
-  //     "amount", "Amount", "amount", amtRange, 100.0f, nullptr, nullptr));
 }
 
 TrafficLightFilterAudioProcessor::~TrafficLightFilterAudioProcessor() {}
@@ -129,7 +105,6 @@ void TrafficLightFilterAudioProcessor::changeProgramName(int index,
 void TrafficLightFilterAudioProcessor::prepareToPlay(double sampleRate,
                                                      int samplesPerBlock)
 {
-  //  lowPassCoeff = 0.0f;
   lastSampleRate = sampleRate;
   std::cout << "running" << std::endl;
   dsp::ProcessSpec spec;
@@ -172,7 +147,6 @@ bool TrafficLightFilterAudioProcessor::isBusesLayoutSupported(
 }
 #endif
 
-// void TrafficLightFilterAudioProcessor::updateFilter(){}
 void TrafficLightFilterAudioProcessor::updateParams()
 {
   std::cout << "updateParams called" << std::endl;
@@ -225,9 +199,9 @@ void TrafficLightFilterAudioProcessor::getStateInformation(
   // You should use this method to store your parameters in the memory block.
   // You could do that either as raw data, or use the XML or ValueTree classes
   // as intermediaries to make it easy to save and load complex data.
-  // auto state = tree.copyState();
-  // std::unique_ptr< XmlElement > xml(state.createXml());
-  // copyXmlToBinary(*xml, destData);
+  auto state = tree.copyState();
+  std::unique_ptr< XmlElement > xml(state.createXml());
+  copyXmlToBinary(*xml, destData);
 }
 
 void TrafficLightFilterAudioProcessor::setStateInformation(const void* data,
@@ -236,10 +210,10 @@ void TrafficLightFilterAudioProcessor::setStateInformation(const void* data,
   // You should use this method to restore your parameters from this memory
   // block, whose contents will have been created by the getStateInformation()
   // call.
-  // std::unique_ptr< XmlElement > xmlState(getXmlFromBinary(data,
-  // sizeInBytes)); if (xmlState.get() != nullptr)
-  //   if (xmlState->hasTagName(tree.state.getType()))
-  //     tree.replaceState(ValueTree::fromXml(*xmlState));
+  std::unique_ptr< XmlElement > xmlState(getXmlFromBinary(data, sizeInBytes));
+  if (xmlState.get() != nullptr)
+    if (xmlState->hasTagName(tree.state.getType()))
+      tree.replaceState(ValueTree::fromXml(*xmlState));
 }
 
 //==============================================================================
