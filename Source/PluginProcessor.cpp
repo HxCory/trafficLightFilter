@@ -101,6 +101,8 @@ void TrafficLightFilterAudioProcessor::prepareToPlay(double sampleRate,
   spec.maximumBlockSize = samplesPerBlock;
   spec.numChannels      = getTotalNumOutputChannels();
 
+//  float sAmt       = *tree.getRawParameterValue("amount");
+//  previousAmt = sAmt;
   highPassFilter.reset();
   highPassFilter.prepare(spec);
 }
@@ -140,7 +142,6 @@ void TrafficLightFilterAudioProcessor::updateParams()
 {
   float sFreq = *tree.getRawParameterValue("cutoff");
   float sRes  = *tree.getRawParameterValue("resonance");
-  float sAmt  = *tree.getRawParameterValue("amount");
 
   // going into "state" of the process duplicator
   *highPassFilter.state = *dsp::IIR::Coefficients< float >::makeHighPass(
@@ -161,6 +162,8 @@ void TrafficLightFilterAudioProcessor::processBlock(
 
   dsp::AudioBlock< float > aBlock(buffer);
   updateParams();
+  float sAmt      = *tree.getRawParameterValue("amount");
+  buffer.applyGain(sAmt / 100.0);
   highPassFilter.process(dsp::ProcessContextReplacing< float >(aBlock));
 }
 

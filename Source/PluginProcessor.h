@@ -52,6 +52,7 @@ class TrafficLightFilterAudioProcessor : public AudioProcessor,
 
  private:
   float lastSampleRate;
+  float previousAmt;
   dsp::ProcessorDuplicator< dsp::IIR::Filter< float >,
                             dsp::IIR::Coefficients< float > >
       highPassFilter;
