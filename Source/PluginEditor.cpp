@@ -26,9 +26,8 @@ TrafficLightFilterAudioProcessorEditor::TrafficLightFilterAudioProcessorEditor(
   resslider.setPopupDisplayEnabled(true, false, this);
   resslider.setTextValueSuffix(" Resonance");
   resslider.setValue(1.0);
-  resslider.setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-  resslider.setColour(Slider::rotarySliderOutlineColourId,
-                      Colours::lightyellow);
+  resslider.setColour(Slider::rotarySliderFillColourId, Colours::goldenrod);
+  resslider.setColour(Slider::rotarySliderOutlineColourId, Colours::yellow);
   addAndMakeVisible(&resslider);
   resonance.reset(new AudioProcessorValueTreeState::SliderAttachment(
       processor.tree, "resonance", resslider));
@@ -46,7 +45,6 @@ TrafficLightFilterAudioProcessorEditor::TrafficLightFilterAudioProcessorEditor(
       processor.tree, "amount", amtslider));
 
   cutoffslider.setSkewFactorFromMidPoint(1000.0f);
-
 }
 
 TrafficLightFilterAudioProcessorEditor::
@@ -57,16 +55,25 @@ TrafficLightFilterAudioProcessorEditor::
 //==============================================================================
 void TrafficLightFilterAudioProcessorEditor::paint(Graphics& g)
 {
-  g.fillAll(Colours::transparentBlack);
-  g.setColour(Colours::darkred);
-  g.setFont(15.0f);
-  g.drawFittedText("Cutoff", 0.1 * getWidth(), 0.25 * getHeight(), getWidth(),
+  auto fixture = Rectangle< float >(0.2 * getWidth(), 0.05 * getHeight(),
+                                    0.3 * getWidth(), 0.85 * getHeight());
+  auto background = Rectangle< float >(0.0, 0.0, getWidth(), getHeight());
+  auto grad = ColourGradient(Colours::dimgrey, 0.0, 0.0, Colours::darkslateblue,
+                             350.0, 350.0, false);
+  g.setGradientFill(grad);
+  g.fillRect(background);
+  g.setColour(Colours::black);
+  g.fillRoundedRectangle(fixture, 12.0);
+  g.setColour(Colours::indianred);
+  g.setFont(25.0f);
+
+  g.drawFittedText("Cutoff", 0.18 * getWidth(), 0.2 * getHeight(), getWidth(),
                    30, Justification::centred, 1);
-  g.setColour(Colours::yellow);
-  g.drawFittedText("Resonance", 0.1 * getWidth(), 0.5 * getHeight(), getWidth(),
-                   30, Justification::centred, 1);
+  g.setColour(Colours::goldenrod);
+  g.drawFittedText("Resonance", 0.18 * getWidth(), 0.45 * getHeight(),
+                   getWidth(), 30, Justification::centred, 1);
   g.setColour(Colours::green);
-  g.drawFittedText("Amount", 0.1 * getWidth(), 0.75 * getHeight(), getWidth(),
+  g.drawFittedText("Amount", 0.18 * getWidth(), 0.7 * getHeight(), getWidth(),
                    30, Justification::centred, 1);
 }
 

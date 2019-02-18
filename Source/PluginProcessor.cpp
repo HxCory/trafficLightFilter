@@ -101,8 +101,8 @@ void TrafficLightFilterAudioProcessor::prepareToPlay(double sampleRate,
   spec.maximumBlockSize = samplesPerBlock;
   spec.numChannels      = getTotalNumOutputChannels();
 
-//  float sAmt       = *tree.getRawParameterValue("amount");
-//  previousAmt = sAmt;
+  //  float sAmt       = *tree.getRawParameterValue("amount");
+  //  previousAmt = sAmt;
   highPassFilter.reset();
   highPassFilter.prepare(spec);
 }
@@ -162,7 +162,7 @@ void TrafficLightFilterAudioProcessor::processBlock(
 
   dsp::AudioBlock< float > aBlock(buffer);
   updateParams();
-  float sAmt      = *tree.getRawParameterValue("amount");
+  float sAmt = *tree.getRawParameterValue("amount");
   buffer.applyGain(sAmt / 100.0);
   highPassFilter.process(dsp::ProcessContextReplacing< float >(aBlock));
 }
