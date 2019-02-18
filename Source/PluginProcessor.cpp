@@ -2,6 +2,10 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+
+// The constructor initializes our filter, as well
+// as the AudioProcessorValueTree, from which
+// we will access the values for the filter parameters
 TrafficLightFilterAudioProcessor::TrafficLightFilterAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
     : AudioProcessor(BusesProperties()
@@ -25,9 +29,6 @@ TrafficLightFilterAudioProcessor::TrafficLightFilterAudioProcessor()
           dsp::IIR::Coefficients< float >::makeHighPass(44100, 1000.0f, 0.1f))
 #endif
 {
-  NormalisableRange< float > cutRange(10.0f, 20000.0f);
-  NormalisableRange< float > resRange(1.0f, 6.0f);
-  NormalisableRange< float > amtRange(0.0f, 100.0f);
 }
 
 TrafficLightFilterAudioProcessor::~TrafficLightFilterAudioProcessor() {}
@@ -72,9 +73,7 @@ double TrafficLightFilterAudioProcessor::getTailLengthSeconds() const
 
 int TrafficLightFilterAudioProcessor::getNumPrograms()
 {
-  return 1;  // NB: some hosts don't cope very well if you tell them there are 0
-             // programs, so this should be at least 1, even if you're not
-             // really implementing programs.
+  return 1;  // this should be at least 1
 }
 
 int TrafficLightFilterAudioProcessor::getCurrentProgram() { return 0; }
@@ -95,14 +94,12 @@ void TrafficLightFilterAudioProcessor::changeProgramName(int index,
 void TrafficLightFilterAudioProcessor::prepareToPlay(double sampleRate,
                                                      int samplesPerBlock)
 {
+  // need a ProcessSpec to prepare the filter
   lastSampleRate = sampleRate;
   dsp::ProcessSpec spec;
   spec.sampleRate       = sampleRate;
   spec.maximumBlockSize = samplesPerBlock;
   spec.numChannels      = getTotalNumOutputChannels();
-
-  //  float sAmt       = *tree.getRawParameterValue("amount");
-  //  previousAmt = sAmt;
   highPassFilter.reset();
   highPassFilter.prepare(spec);
 }
@@ -121,8 +118,8 @@ bool TrafficLightFilterAudioProcessor::isBusesLayoutSupported(
   ignoreUnused(layouts);
   return true;
 #else
-  // This is the place where you check if the layout is supported.
-  // In this template code we only support mono or stereo.
+  // Check if the layout is supported.
+  // Currently we only support mono or stereo.
   if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono() &&
       layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
     return false;
@@ -138,12 +135,15 @@ bool TrafficLightFilterAudioProcessor::isBusesLayoutSupported(
 }
 #endif
 
+// function for updating the filter parameters
 void TrafficLightFilterAudioProcessor::updateParams()
 {
+  // get cutoff frequency and resonance values from value tree
   float sFreq = *tree.getRawParameterValue("cutoff");
   float sRes  = *tree.getRawParameterValue("resonance");
 
-  // going into "state" of the process duplicator
+  // going into the state of the processor duplicator, and updating the
+  // parameters of the filter
   *highPassFilter.state = *dsp::IIR::Coefficients< float >::makeHighPass(
       lastSampleRate, sFreq, sRes);
 }
@@ -160,18 +160,20 @@ void TrafficLightFilterAudioProcessor::processBlock(
     buffer.clear(i, 0, buffer.getNumSamples());
   }
 
+  // create buffer, update filter parameters with
+  // updateParams function (see above)
   dsp::AudioBlock< float > aBlock(buffer);
   updateParams();
+
+  // use Amount knob as a gain knob before processing audio block
+  // NB: in the future, want this to be a distortion knob instead
   float sAmt = *tree.getRawParameterValue("amount");
   buffer.applyGain(sAmt / 100.0);
   highPassFilter.process(dsp::ProcessContextReplacing< float >(aBlock));
 }
 
 //==============================================================================
-bool TrafficLightFilterAudioProcessor::hasEditor() const
-{
-  return true;  // (change this to false if you choose to not supply an editor)
-}
+bool TrafficLightFilterAudioProcessor::hasEditor() const { return true; }
 
 AudioProcessorEditor* TrafficLightFilterAudioProcessor::createEditor()
 {
@@ -182,9 +184,7 @@ AudioProcessorEditor* TrafficLightFilterAudioProcessor::createEditor()
 void TrafficLightFilterAudioProcessor::getStateInformation(
     MemoryBlock& destData)
 {
-  // You should use this method to store your parameters in the memory block.
-  // You could do that either as raw data, or use the XML or ValueTree classes
-  // as intermediaries to make it easy to save and load complex data.
+  // store parameters in the memory block.
   auto state = tree.copyState();
   std::unique_ptr< XmlElement > xml(state.createXml());
   copyXmlToBinary(*xml, destData);
@@ -193,9 +193,7 @@ void TrafficLightFilterAudioProcessor::getStateInformation(
 void TrafficLightFilterAudioProcessor::setStateInformation(const void* data,
                                                            int sizeInBytes)
 {
-  // You should use this method to restore your parameters from this memory
-  // block, whose contents will have been created by the getStateInformation()
-  // call.
+  // restore parameters from memory block
   std::unique_ptr< XmlElement > xmlState(getXmlFromBinary(data, sizeInBytes));
   if (xmlState.get() != nullptr)
     if (xmlState->hasTagName(tree.state.getType()))

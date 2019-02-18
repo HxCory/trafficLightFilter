@@ -53,51 +53,53 @@ class TrafficLightFilterAudioProcessor : public AudioProcessor,
  private:
   float lastSampleRate;
   float previousAmt;
+
+  // Use a ProcessorDuplicator for the IIR filter to turn mono into stereo
   dsp::ProcessorDuplicator< dsp::IIR::Filter< float >,
                             dsp::IIR::Coefficients< float > >
       highPassFilter;
 
-  template < typename Type >
-  class Distortion
-  {
-   public:
-    //==============================================================================
-    Distortion()
-    {
-      auto& waveshaper =
-          processorChain.template get< waveshaperIndex >();  // [5]
-      waveshaper.functionToUse = [](Type x) {
-        return jlimit(Type(-0.1), Type(0.1), x);  // [6]
-      };
-    }
-
-    //==============================================================================
-    void prepare(const juce::dsp::ProcessSpec& spec)
-    {
-      processorChain.prepare(spec);
-    }
-
-    //==============================================================================
-    template < typename ProcessContext >
-    void process(const ProcessContext& context) noexcept
-    {
-      processorChain.process(context);
-    }
-
-    //==============================================================================
-    void reset() noexcept { processorChain.reset(); }
-
-   private:
-    //==============================================================================
-    enum
-    {
-      waveshaperIndex
-    };
-
-    juce::dsp::ProcessorChain< juce::dsp::WaveShaper< Type > > processorChain;
-  };
-
   //==============================================================================
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TrafficLightFilterAudioProcessor)
+};
+
+// Distortion class not implemented yet
+template < typename Type >
+class Distortion
+{
+ public:
+  //==============================================================================
+  Distortion()
+  {
+    auto& waveshaper = processorChain.template get< waveshaperIndex >();  // [5]
+    waveshaper.functionToUse = [](Type x) {
+      return jlimit(Type(-0.1), Type(0.1), x);  // [6]
+    };
+  }
+
+  //==============================================================================
+  void prepare(const juce::dsp::ProcessSpec& spec)
+  {
+    processorChain.prepare(spec);
+  }
+
+  //==============================================================================
+  template < typename ProcessContext >
+  void process(const ProcessContext& context) noexcept
+  {
+    processorChain.process(context);
+  }
+
+  //==============================================================================
+  void reset() noexcept { processorChain.reset(); }
+
+ private:
+  //==============================================================================
+  enum
+  {
+    waveshaperIndex
+  };
+
+  juce::dsp::ProcessorChain< juce::dsp::WaveShaper< Type > > processorChain;
 };

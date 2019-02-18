@@ -24,6 +24,7 @@ class TrafficLightFilterAudioProcessorEditor : public AudioProcessorEditor
   std::unique_ptr< AudioProcessorValueTreeState::SliderAttachment > cutoff;
   std::unique_ptr< AudioProcessorValueTreeState::SliderAttachment > resonance;
   std::unique_ptr< AudioProcessorValueTreeState::SliderAttachment > amount;
+
   TrafficLightFilterAudioProcessor& processor;
 
   //==============================================================================

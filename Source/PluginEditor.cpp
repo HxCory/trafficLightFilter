@@ -8,6 +8,7 @@ TrafficLightFilterAudioProcessorEditor::TrafficLightFilterAudioProcessorEditor(
 {
   setSize(400, 400);
 
+  // Slider setup
   cutoffslider.setSliderStyle(Slider::RotaryVerticalDrag);
   cutoffslider.setRange(10.0, 20000.0, 1.0);
   cutoffslider.setTextBoxStyle(Slider::NoTextBox, false, 90, 0);
@@ -55,6 +56,8 @@ TrafficLightFilterAudioProcessorEditor::
 //==============================================================================
 void TrafficLightFilterAudioProcessorEditor::paint(Graphics& g)
 {
+  // set rectangles for the fixture of the traffic light
+  // as well as the background and the needed color gradient
   auto fixture = Rectangle< float >(0.2 * getWidth(), 0.05 * getHeight(),
                                     0.3 * getWidth(), 0.85 * getHeight());
   auto background = Rectangle< float >(0.0, 0.0, getWidth(), getHeight());
@@ -64,9 +67,10 @@ void TrafficLightFilterAudioProcessorEditor::paint(Graphics& g)
   g.fillRect(background);
   g.setColour(Colours::black);
   g.fillRoundedRectangle(fixture, 12.0);
+
+  // label the sliders
   g.setColour(Colours::indianred);
   g.setFont(25.0f);
-
   g.drawFittedText("Cutoff", 0.18 * getWidth(), 0.2 * getHeight(), getWidth(),
                    30, Justification::centred, 1);
   g.setColour(Colours::goldenrod);
@@ -79,6 +83,7 @@ void TrafficLightFilterAudioProcessorEditor::paint(Graphics& g)
 
 void TrafficLightFilterAudioProcessorEditor::resized()
 {
+  // slider positions
   cutoffslider.setBounds(0.1 * getWidth(), 0.1 * getHeight(), 0.5 * getWidth(),
                          100);
   resslider.setBounds(0.1 * getWidth(), 0.35 * getHeight(), 0.5 * getWidth(),
